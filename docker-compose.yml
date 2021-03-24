@@ -1,0 +1,27 @@
+version: '3'
+services:
+  ttgen-test:
+    container_name: ttgen-test
+    image: ttgen:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - python3
+      - -m
+      - http.server
+    ports:
+      - "8000:8000"
+  ttgen-build:
+    container_name: ttgen-build
+    image: ttgen:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - tar
+      - -czf
+      - /out/ttgen-build.tar.gz
+      - /ttgen/
+    volumes:
+      - ./out/:/out/:rw
