@@ -22,6 +22,6 @@ services:
       - tar
       - -czf
       - /out/ttgen-build.tar.gz
-      - /ttgen/
+      - /tabletopgen/
     volumes:
       - ./out/:/out/:rw
