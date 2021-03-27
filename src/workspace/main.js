@@ -162,10 +162,10 @@ function getParameterDefinitions() {
             caption: "Surface damage:"
         },
         { name: 'top_seed', type: 'int', min: 0, max: 2147483648, initial: 42, caption: "Surface damage seed:" },
-        { name: 'top_surf_detail', type: 'int', initial: 5, min: 1, max: 8, caption: "Surface damage detail leve:" },
-        { name: 'bullet_seed', type: 'int', min: 0, max: 2147483648, initial: 42, caption: "Bullet seed:" },
+        { name: 'top_surf_detail', type: 'int', initial: 5, min: 1, max: 8, caption: "Surface damage detail level:" },
+        { name: 'bullet_seed', type: 'int', min: 0, max: 2147483648, initial: 42, caption: "Bullet hole seed:" },
         { name: 'bullet_count', type: 'int', initial: 5, min: 0, max: 50, caption: "Bullet hole count:" },
-        { name: 'bullet_hole_detail', type: 'int', initial: 5, min: 1, max: 9, caption: "Bullet hole detail level:" },
+        { name: 'bullet_hole_detail', type: 'int', initial: 5, min: 2, max: 8, caption: "Bullet hole detail level:" },
       ];
   }
 
@@ -179,11 +179,17 @@ function main(params){
 
     var top_seed = params.top_seed;
     var top_damage = params.top_damage === 'Yes';
-    var surface_detail = params.top_surf_detail;
+    var top_detail = params.top_surf_detail;
     var bullet_seed = params.bullet_seed;
     var bullet_count = params.bullet_count;
     var bullet_detail = params.bullet_hole_detail;
     var maxDelta = 0.5;
+
+    top_detail = Math.min(top_detail, 8);
+    top_detail = Math.max(top_detail, 0);
+
+    bullet_detail = Math.min(bullet_detail, 8);
+    bullet_detail = Math.max(bullet_detail, 2);
 
     // Make a twall section and get the size
     var wall = move_to_zero(TWall.create().scale(1/4.5));
@@ -198,12 +204,12 @@ function main(params){
     // Make the surface damage
     wall = apply_bullet_holes(bullet_seed, wall, bullet_count, bullet_detail);
     if(top_damage){
-        surface = make_surface(top_seed, maxDelta, surface_detail);
+        surface = make_surface(top_seed, maxDelta, top_detail);
         var damageMap = HeightMap.to_polyhedron(surface,mapSize);
         damageMap = center_xy(damageMap);
         wall = intersection(damageMap,wall);
     }
 
-    //var wall = color([0.5,0.5,0.5],wall);
-    return [wall];
+    var wall = color([0.5,0.5,0.5],wall);
+    return [center(true,wall)];
 }
