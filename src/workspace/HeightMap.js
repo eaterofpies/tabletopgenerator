@@ -11,7 +11,7 @@ function to_cubes(pts){
     return union(chunks);
 }
 
-function to_poly(data, scale){
+function to_polyhedron(data, scale){
     var sizeX = data.length;
     var sizeY = data[0].length;
 
@@ -166,12 +166,56 @@ function to_poly(data, scale){
     return polyhedron({triangles: tri_list, points: vert_list});
 }
 
+
+function to_points(heights, scale){
+    var points = [[0,0]];
+    var widthStep = scale[0]/(heights.length);
+
+    for(var i = 0; i < heights.length; i++){
+        var point = [
+            i * widthStep,
+            Math.max(heights[i]*scale[1], 0.01)
+        ];
+
+        points.push(point);
+    }
+    points.push([(points.length-1) * widthStep, 0]);
+    return points;
+}
+
+
+function to_points_circular(heights, scale){
+    var arcStep = (2*Math.PI) / heights.length;
+
+    var points = [];
+    for(var i = 0; i < heights.length-1; i++){
+        var height = Math.max(heights[i]*scale, 0.01)
+        var point = [
+            Math.sin(i*arcStep) * height,
+            Math.cos(i*arcStep) * height
+        ];
+
+        points.push(point);
+    }
+    return points;
+}
+
+
 HeightMap=function(){
     HeightMap.to_cubes = function(pts){
         return to_cubes(pts);
     }
 
-    HeightMap.to_poly = function(pts, scale){
-        return to_poly(pts, scale);
+    HeightMap.to_polyhedron = function(pts, scale){
+        return to_polyhedron(pts, scale);
     }
+
+    HeightMap.to_points = function(heights, scale){
+        return to_points(heights, scale);
+    }
+
+    HeightMap.to_points_circular = function(heights, scale){
+        return to_points_circular(heights, scale);
+    }
+
 }
