@@ -1,6 +1,6 @@
 # Tabletop Generator
 
-A procedural generation for tabletop game terrain.
+A procedural generator for tabletop game terrain.
 
 See LICENSE file for licensing details. If you have suggestions on alternative licensing then file an [issue](https://github.com/eaterofpies/tabletopgenerator/issues).
 
