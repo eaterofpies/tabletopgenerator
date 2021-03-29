@@ -4,9 +4,9 @@ A procedural generation for tabletop game terrain.
 
 See LICENSE file for licensing details. If you have suggestions on alternative licensing then file an [issue](https://github.com/eaterofpies/tabletopgenerator/issues).
 
-Use the latest stable version [here](https://eaterofpies.github.io/tabletopgen/)
+Use the latest stable version [here](https://eaterofpies.github.io/tabletopgen/).
 
-This project uses [OpenJSCAD](https://github.com/jscad/OpenJSCAD.org)
+This project uses [OpenJSCAD](https://github.com/jscad/OpenJSCAD.org).
 
 ## Basic Usage
 
