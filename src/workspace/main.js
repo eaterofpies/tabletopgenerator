@@ -162,9 +162,9 @@ function getParameterDefinitions() {
             initial: "Yes",
             caption: "Surface damage:"
         },
-        { name: 'top_seed', type: 'int', min: 0, max: 2147483648, initial: 42, caption: "Surface damage seed:" },
+        { name: 'top_seed', type: 'int', min: 0, max: 2147483647, initial: 42, caption: "Surface damage seed:" },
         { name: 'top_surf_detail', type: 'int', initial: 5, min: 1, max: 8, caption: "Surface damage detail level:" },
-        { name: 'bullet_seed', type: 'int', min: 0, max: 2147483648, initial: 42, caption: "Bullet hole seed:" },
+        { name: 'bullet_seed', type: 'int', min: 0, max: 2147483647, initial: 42, caption: "Bullet hole seed:" },
         { name: 'bullet_count', type: 'int', initial: 5, min: 0, max: 50, caption: "Bullet hole count:" },
         { name: 'bullet_hole_detail', type: 'int', initial: 5, min: 2, max: 8, caption: "Bullet hole detail level:" },
       ];
