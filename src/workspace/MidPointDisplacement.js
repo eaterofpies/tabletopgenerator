@@ -12,7 +12,7 @@ function run(rng, oldPts, maxDelta){
     for(var i = 1; i < pointCount; i+=2){
         // get the average of the points either side
         mid = (newPts[i-1] + newPts[i+1])/2;
-        newPts[i] = mid + rng.genrand_real_scale(maxDelta);
+        newPts[i] = mid + rng.realrange(-maxDelta, maxDelta);
     }
     return newPts;
 }

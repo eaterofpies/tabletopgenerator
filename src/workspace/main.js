@@ -9,22 +9,22 @@ include("Util.js");
 
 function make_surface(seed, maxDelta, iterations){
 
-    var surf_rng = RngFactory.create(seed);
+    var rng = RngFactory.create(seed);
     var surface =
     [
         [
-            maxDelta + surf_rng.genrand_real_scale(maxDelta),
-            maxDelta + surf_rng.genrand_real_scale(maxDelta)
+            rng.realrange(0, maxDelta*2),
+            rng.realrange(0, maxDelta*2)
         ],
         [
-            maxDelta + surf_rng.genrand_real_scale(maxDelta),
-            maxDelta + surf_rng.genrand_real_scale(maxDelta)
+            rng.realrange(0, maxDelta*2),
+            rng.realrange(0, maxDelta*2)
         ]
     ]
 
     for(var i = 0; i < iterations; i++){
-        maxDelta /= 2;
-       surface = DiamondSquare.run(surf_rng, surface, maxDelta);
+       maxDelta /= 2;
+       surface = DiamondSquare.run(rng, surface, maxDelta);
     }
 
     return surface;
@@ -33,17 +33,18 @@ function make_surface(seed, maxDelta, iterations){
 function make_mpd(rng, maxDelta, iterations, wrap){
 
     var pts = [
-        maxDelta + rng.genrand_real_scale(maxDelta)
+        rng.realrange(0, maxDelta*2)
     ];
 
 
+    // Always get the random number
+    // the rest of the shape is similar
+    var farPt = rng.realrange(0, maxDelta*2);
+
     if (wrap === true){
         pts.push(pts[0]);
-        // dump a random number to ensure
-        // the rest of the shape is similar
-        rng.genrand_real_scale(maxDelta);
     } else {
-        pts.push(maxDelta + rng.genrand_real_scale(maxDelta));
+        pts.push(farPt);
     }
 
     for (var i = 0; i < iterations; i++){
@@ -57,7 +58,7 @@ function make_mpd(rng, maxDelta, iterations, wrap){
 function make_bullet_hole(seed, iterations, maxDelta, maxDiameter, maxDepth){
     var rng = RngFactory.create(seed);
 
-    depth = maxDepth * rng.genrand_real1();
+    depth = maxDepth * rng.real();
 
     offsets = make_mpd(rng, maxDelta, iterations, true);
 
@@ -84,10 +85,10 @@ function position_bullet_hole(target, seed, hole){
     var rng = RngFactory.create(seed);
 
     // pick a side to do the damage on
-    side = rng.genrand_real1() < 0.5;
+    side = rng.real() < 0.5;
 
-    target_y = rng.genrand_real1()*target_size[1];
-    target_z = rng.genrand_real1()*target_size[2];
+    target_y = rng.real()*target_size[1];
+    target_z = rng.real()*target_size[2];
     // work out depth by cutting a cube through it and getting the bounds
     // Work out the size of the intersection
     projectile_path = center(true, cube([target_size[0], hole_size[1], hole_size[2]]));
@@ -124,9 +125,9 @@ function apply_bullet_holes(seed, target, bullet_count, mpd_iterations){
 
     var holes = [];
     for(var i = 0; i < bullet_count; i++){
-        var hole_rng = RngFactory.create(rng.genrand_int32());
-        var hole = make_bullet_hole(hole_rng.genrand_int32(), mpd_iterations, maxDelta, maxDiameter, maxDepth);
-        hole = position_bullet_hole(target, hole_rng.genrand_int32(), hole);
+        var hole_rng = RngFactory.create(rng.int31());
+        var hole = make_bullet_hole(hole_rng.int31(), mpd_iterations, maxDelta, maxDiameter, maxDepth);
+        hole = position_bullet_hole(target, hole_rng.int31(), hole);
         holes.push(hole);
     }
 

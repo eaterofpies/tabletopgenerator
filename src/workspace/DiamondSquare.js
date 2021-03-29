@@ -1,3 +1,5 @@
+
+
 function ds_allocate(oldPts){
     var size = (oldPts.length * 2) -1;
 
@@ -19,17 +21,17 @@ function ds_copy(oldPts, newPts){
     }
 }
 
-function ds_diamond(newPts, rng, max_delta){
+function ds_diamond(newPts, rng, maxDelta){
     var size = newPts.length;
     for(var x = 1; x < size; x +=2 ){
         for(var y = 1; y < size; y += 2){
             newPts[x][y] = (newPts[x-1][y-1] + newPts[x+1][y-1] + newPts[x-1][y+1] + newPts[x+1][y+1])/4;
-            newPts[x][y] += rng.genrand_real_scale(max_delta);
+            newPts[x][y] += rng.realrange(-maxDelta, maxDelta);
         }
     }
 }
 
-function ds_square(newPts, rng, max_delta){
+function ds_square(newPts, rng, maxDelta){
     var size = newPts.length;
     for(var y = 0; y < size; y++){
         var x_start = 1;
@@ -60,26 +62,26 @@ function ds_square(newPts, rng, max_delta){
             }
 
             newPts[x][y] = (sum / count);
-            newPts[x][y] += rng.genrand_real_scale(max_delta);
+            newPts[x][y] += rng.realrange(-maxDelta, maxDelta);
         }
     }
 }
 
-function run(rng, oldPts, max_delta){
+function run(rng, oldPts, maxDelta){
     var newPts = ds_allocate(oldPts);
 
     ds_copy(oldPts, newPts);
 
-    ds_diamond(newPts, rng, max_delta);
+    ds_diamond(newPts, rng, maxDelta);
 
-    ds_square(newPts, rng, max_delta);
+    ds_square(newPts, rng, maxDelta);
 
     return newPts;
 }
 
 
 DiamondSquare=function(){
-    DiamondSquare.run = function(rng, oldPts, max_delta){
-        return run(rng, oldPts, max_delta);
+    DiamondSquare.run = function(rng, oldPts, maxDelta){
+        return run(rng, oldPts, maxDelta);
     }
 }
