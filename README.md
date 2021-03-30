@@ -16,3 +16,6 @@ This project uses [OpenJSCAD](https://github.com/jscad/OpenJSCAD.org).
 - Increase the detail levels for 3d printing. Valid detail levels are in the range 0 - 8.
 - Generate the STL and download the model.
 - Add supports before printing depending on the amount of damage. Most bullet holes will print without supports.
+
+## Known issues
+- Some seeds will continue processing forever. For now just try another seed.
