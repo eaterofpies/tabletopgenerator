@@ -76,10 +76,7 @@ function get_size(obj){
 
 function position_bullet_hole(target, seed, hole){
     target_bounds = target.getBounds();
-    hole_bounds = hole.getBounds();
     target_size = get_size(target);
-
-    hole_size = get_size(hole);
 
     // position in the range of the sides of the wall
     var rng = RngFactory.create(seed);
@@ -87,26 +84,39 @@ function position_bullet_hole(target, seed, hole){
     // pick a side to do the damage on
     side = rng.real() < 0.5;
 
+    // flip the bullet hole before working out the shape of the path incase it's off center
+    if (side){
+        hole = hole.rotateY(180);
+    }
+
+    hole_size = get_size(hole);
+    hole_bounds = hole.getBounds();
+
+    // work out the approximate shape of the path of the shot
+    projectile_path = cube({size: [target_size[0], hole_size[1], hole_size[2]], center:[true, false, false]})
+
+    projectile_path = projectile_path.translate([0,hole_bounds[0].y, hole_bounds[0].z]);
+
+    // work out where to place the hole.
     target_y = rng.real()*target_size[1];
     target_z = rng.real()*target_size[2];
-    // work out depth by cutting a cube through it and getting the bounds
-    // Work out the size of the intersection
-    projectile_path = center(true, cube([target_size[0], hole_size[1], hole_size[2]]));
 
-    //position the intersection in line with the target
-    projectile_path = projectile_path.translate([0,
+    // position the intersection in line with the target
+    projectile_path = projectile_path.translate([
+        0,
         target_y + target_bounds[0].y,
         target_z + target_bounds[0].z
     ]);
 
+    // Work out depth to place the hole at by cutting a cube through it and getting the bounds
     hit_bounds = intersection([target, projectile_path]).getBounds();
 
     var target_x = hit_bounds[0].x-0.01;
     if (side){
         target_x = hit_bounds[1].x+0.01;
-        hole = hole.rotateY(180);
     }
 
+    // Place the hole at the correct location for cutting.
     hole = hole.translate([
         target_x,
         target_y + target_bounds[0].y,
