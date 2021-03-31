@@ -63,7 +63,7 @@ function make_bullet_hole(seed, iterations, maxDelta, maxDiameter, maxDepth){
     offsets = make_mpd(rng, maxDelta, iterations, true);
 
     var points  = HeightMap.to_points_circular(offsets, maxDiameter/2);
-    return Util.linear_extrude_scale(points, depth, 0.01).rotateY(90);
+    return Util.closed_triangle_fan_pair(points, depth).rotateY(90);
 }
 
 function get_size(obj){

@@ -35,8 +35,41 @@ function linear_extrude_scale(pts, height, scale){
     return polyhedron({triangles:tris, points:pts_3d});
 }
 
+function closed_triangle_fan_pair(pts, height){
+    pts_3d = [];
+    pt_count = pts.length
+    for (var i = 0; i < pt_count; i++){
+        pt = pts[i]
+        pts_3d.push([pt[0], pt[1], 0])
+    }
+
+    // don't add the middle points yet
+    // as the indexing gets harder
+    var bm = pts_3d.length;
+    var tm = pts_3d.length+1;
+
+    tris = [];
+    for (var i = 0; i < pts_3d.length; i+=1){
+        function calc_offset(n){
+            return (i + n) % pts_3d.length;
+        }
+        tris.push([calc_offset(1),calc_offset(0),bm]);
+        tris.push([calc_offset(0),calc_offset(1),tm]);
+    }
+
+    // bottom and top middle
+    pts_3d.push([0, 0, 0]);
+    pts_3d.push([0, 0, height]);
+
+    return polyhedron({triangles:tris, points:pts_3d});
+}
+
 Util=function(){
     Util.linear_extrude_scale = function(pts, height, scale){
         return linear_extrude_scale(pts, height, scale);
+    }
+
+    Util.closed_triangle_fan_pair = function(pts, height){
+        return closed_triangle_fan_pair(pts, height);
     }
 }
