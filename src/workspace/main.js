@@ -5,7 +5,7 @@ include("MidPointDisplacement.js");
 include("TWall.js");
 include("Util.js");
 
-
+"use strict";
 
 function make_surface(seed, maxDelta, iterations){
 
@@ -163,6 +163,16 @@ function center_xy(obj){
     return obj;
 }
 
+function uint31_max(){
+    return 2147483647.0;
+}
+
+function rand_uint31(){
+    var value = uint31_max() * Math.random();
+    value = Math.round(value);
+    return value;
+}
+
 function getParameterDefinitions() {
     return [
         {
@@ -172,10 +182,10 @@ function getParameterDefinitions() {
             initial: "Yes",
             caption: "Surface damage:"
         },
-        { name: 'top_seed', type: 'int', min: 0, max: 2147483647, initial: 42, caption: "Surface damage seed:" },
+        { name: 'top_seed', type: 'int', min: 0, max: uint31_max(), initial: 2132471456 , caption: "Surface damage seed:" },
         { name: 'top_surf_detail', type: 'int', initial: 5, min: 1, max: 8, caption: "Surface damage detail level:" },
-        { name: 'bullet_seed', type: 'int', min: 0, max: 2147483647, initial: 42, caption: "Bullet hole seed:" },
-        { name: 'bullet_count', type: 'int', initial: 5, min: 0, max: 50, caption: "Bullet hole count:" },
+        { name: 'bullet_seed', type: 'int', min: 0, max: uint31_max(), initial: 412449399, caption: "Bullet hole seed:" },
+        { name: 'bullet_count', type: 'int', initial: 30, min: 0, max: 50, caption: "Bullet hole count:" },
         { name: 'bullet_hole_detail', type: 'int', initial: 5, min: 2, max: 8, caption: "Bullet hole detail level:" },
       ];
   }
