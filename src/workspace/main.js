@@ -75,19 +75,19 @@ function get_size(obj){
 }
 
 function position_bullet_hole(target, seed, hole){
-    target_bounds = target.getBounds();
-    target_size = get_size(target);
 
     // position in the range of the sides of the wall
     var rng = RngFactory.create(seed);
 
     // pick a side to do the damage on
-    side = rng.real() < 0.5;
+    rotation = rng.real()*360;
 
-    // flip the bullet hole before working out the shape of the path incase it's off center
-    if (side){
-        hole = hole.rotateY(180);
-    }
+    // rotate the target before working out the shape of the path then apply the inverse rotation to the hole
+    target = target.rotateZ(rotation);
+
+    target_bounds = target.getBounds();
+    target_size = get_size(target);
+
 
     hole_size = get_size(hole);
     hole_bounds = hole.getBounds();
@@ -112,16 +112,13 @@ function position_bullet_hole(target, seed, hole){
     hit_bounds = intersection([target, projectile_path]).getBounds();
 
     var target_x = hit_bounds[0].x-0.01;
-    if (side){
-        target_x = hit_bounds[1].x+0.01;
-    }
 
     // Place the hole at the correct location for cutting.
     hole = hole.translate([
         target_x,
         target_y + target_bounds[0].y,
         target_z + target_bounds[0].z,
-    ]);
+    ]).rotateZ(-rotation);
 
     return hole;
 }
@@ -229,13 +226,14 @@ function main(params){
     mapSize = [size, size, [bounds[1].z+2]];
 
     // Make the surface damage
-    wall = apply_bullet_holes(bullet_seed, wall, bullet_count, bullet_detail);
     if(top_damage) {
         surface = make_surface(top_seed, maxDelta, top_detail);
         var damageMap = HeightMap.to_polyhedron(surface,mapSize);
         damageMap = damageMap.center([true, true, false]);
         wall = intersection(damageMap,wall);
     }
+
+    wall = apply_bullet_holes(bullet_seed, wall, bullet_count, bullet_detail);
 
     wall = color([0.5,0.5,0.5],wall);
     return [wall];
