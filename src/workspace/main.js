@@ -2,7 +2,7 @@ include("DiamondSquare.js");
 include("HeightMap.js");
 include("MersenneTwister.js");
 include("MidPointDisplacement.js");
-include("TWall.js");
+include("Wall.js");
 include("Util.js");
 
 "use strict";
@@ -154,15 +154,6 @@ function move_to_zero(obj){
     return obj.translate([-lower.x, -lower.y, -lower.z]);
 }
 
-function center_xy(obj){
-    var lower = obj.getBounds()[0];
-    obj = obj.translate([-lower.x, -lower.y, 0]);
-
-    var upper = obj.getBounds()[1];
-    obj = obj.translate([-upper.x/2, -upper.y/2, 0]);
-    return obj;
-}
-
 function uint31_max(){
     return 2147483647.0;
 }
@@ -175,6 +166,13 @@ function rand_uint31(){
 
 function getParameterDefinitions() {
     return [
+        {
+            name: 'wall_type',
+            type: 'choice',
+            values: ['Blast Barrier', 'Traffic Barrier'],
+            initial: 'Blast Barrier',
+            caption: 'Wall type:'
+        },
         {
             name: 'top_damage',
             type: 'choice',
@@ -195,15 +193,17 @@ function main(params){
     HeightMap();
     MidPointDisplacement();
     RngFactory();
-    TWall();
+    Wall();
     Util();
 
+    var wall_type = params.wall_type;
     var top_seed = params.top_seed;
     var top_damage = params.top_damage === 'Yes';
     var top_detail = params.top_surf_detail;
     var bullet_seed = params.bullet_seed;
     var bullet_count = params.bullet_count;
     var bullet_detail = params.bullet_hole_detail;
+
     var maxDelta = 0.5;
 
     top_detail = Math.min(top_detail, 8);
@@ -212,25 +212,31 @@ function main(params){
     bullet_detail = Math.min(bullet_detail, 8);
     bullet_detail = Math.max(bullet_detail, 2);
 
-    // Make a twall section and get the size
-    var wall = move_to_zero(TWall.create().scale(1/4.5));
+    // Make a wall section and get the size
+    if (wall_type === 'Traffic Barrier'){
+        var wall = Wall.traffic_barrier().scale(1/45);
+    } else {
+        var wall = Wall.blast_barrier().scale(1/4.5);
+    }
 
+    wall = move_to_zero(wall);
     bounds = wall.getBounds();
-    wall = center_xy(wall);
+    wall = wall.center([true, true, false]);
 
     // Use the max of width and depth to scale the surface damage
-    size = Math.max(bounds[1].x+2, bounds[1].y+2);
+    var wall_size = get_size(wall)
+    size = Math.max(wall_size[0]+2, wall_size[1]+2);
     mapSize = [size, size, [bounds[1].z+2]];
 
     // Make the surface damage
     wall = apply_bullet_holes(bullet_seed, wall, bullet_count, bullet_detail);
-    if(top_damage){
+    if(top_damage) {
         surface = make_surface(top_seed, maxDelta, top_detail);
         var damageMap = HeightMap.to_polyhedron(surface,mapSize);
-        damageMap = center_xy(damageMap);
+        damageMap = damageMap.center([true, true, false]);
         wall = intersection(damageMap,wall);
     }
 
-    var wall = color([0.5,0.5,0.5],wall);
-    return [center(true,wall)];
+    wall = color([0.5,0.5,0.5],wall);
+    return [wall];
 }
