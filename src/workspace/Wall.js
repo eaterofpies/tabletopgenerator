@@ -1,4 +1,4 @@
-function traffic_barrier(){
+function traffic_barrier(end_angle){
     // dimensions based on https://en.wikipedia.org/wiki/Jersey_barrier#/media/File:Jersey_barrier_2.png
     pts = [
         [-150, 1070],
@@ -11,8 +11,10 @@ function traffic_barrier(){
         [-150 - 50, 255]
     ];
 
+    length = 2500;
+
     // length is approx 8ft
-    var barrier = linear_extrude({height: 2500}, polygon(pts)).rotateX(90);
+    var barrier = linear_extrude({height: length}, polygon(pts)).rotateX(90);
 
     // center it in x and y and zero it in z
     barrier = center([true, true, false], barrier).translate([0,0,75]);
@@ -20,6 +22,21 @@ function traffic_barrier(){
     bounds = barrier.getBounds();
     width = bounds[1].x - bounds[0].x;
     height = bounds[1].z - bounds[0].z;
+
+    // carve out the edges so that you can make corners out of them
+    end_angle_rad = end_angle * Math.PI/180;
+    end_inset = 410 * Math.tan(end_angle);
+    pts = [
+        [0,length],
+        [410,length - end_inset],
+        [410,end_inset],
+        [0,0],
+        [-410,end_inset],
+        [-410,length - end_inset]
+    ];
+    footprint = linear_extrude({height: height}, polygon(pts));
+    footprint = center([true, true, false], footprint);
+    barrier = barrier.intersect(footprint);
 
     barrier = barrier.subtract(cylinder({r: 40, h : height, center:[true,true,false]}).translate([0,bounds[0].y,0]));
     barrier = barrier.union(cylinder({r: 35, h : height, center:[true,true,false]}).translate([0,bounds[1].y,0]));
@@ -73,8 +90,8 @@ function blast_barrier() {
 }
 
 Wall=function(){
-    Wall.traffic_barrier = function(){
-        return traffic_barrier();
+    Wall.traffic_barrier = function(end_angle){
+        return traffic_barrier(end_angle);
     }
 
     Wall.blast_barrier = function(){
