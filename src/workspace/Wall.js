@@ -1,4 +1,4 @@
-function traffic_barrier(end_angle){
+function traffic_barrier(){
     // dimensions based on https://en.wikipedia.org/wiki/Jersey_barrier#/media/File:Jersey_barrier_2.png
     pts = [
         [-150, 1070],
@@ -24,22 +24,32 @@ function traffic_barrier(end_angle){
     height = bounds[1].z - bounds[0].z;
 
     // carve out the edges so that you can make corners out of them
-    end_angle_rad = end_angle * Math.PI/180;
-    end_inset = 410 * Math.tan(end_angle);
+    end_angle_rad = 45 * Math.PI/180;
+
+    // connector inset
+    c = 1200/9;
+
+    // size of angled section
+    ax = bounds[1].x - (1.5*c);
+    ay = ax * Math.tan(end_angle_rad);
     pts = [
-        [0,length],
-        [410,length - end_inset],
-        [410,end_inset],
-        [0,0],
-        [-410,end_inset],
-        [-410,length - end_inset]
+        // connector to the next barrier
+        [-1.5 * c, bounds[1].y - c],
+        [0.5 * c, bounds[1].y - c],
+        [0.5 * c, bounds[1].y],
+        [1.5 * c, bounds[1].y],
+        [bounds[1].x, bounds[1].y - ay],
+        [bounds[1].x, bounds[0].y + c + ay],
+        [1.5 * c, bounds[0].y + c],
+        [-0.5 * c, bounds[0].y + c],
+        [-0.5 * c, bounds[0].y],
+        [-1.5 * c, bounds[0].y],
+        [bounds[0].x, bounds[0].y+ay],
+        [bounds[0].x, bounds[1].y - c - ay]
     ];
     footprint = linear_extrude({height: height}, polygon(pts));
     footprint = center([true, true, false], footprint);
     barrier = barrier.intersect(footprint);
-
-    barrier = barrier.subtract(cylinder({r: 40, h : height, center:[true,true,false]}).translate([0,bounds[0].y,0]));
-    barrier = barrier.union(cylinder({r: 35, h : height, center:[true,true,false]}).translate([0,bounds[1].y,0]));
 
     // make a cutout for forklift prongs
     forklift_prong = cube([width+10, 200, 75]).center([true, true, false]);
@@ -90,8 +100,8 @@ function blast_barrier() {
 }
 
 Wall=function(){
-    Wall.traffic_barrier = function(end_angle){
-        return traffic_barrier(end_angle);
+    Wall.traffic_barrier = function(){
+        return traffic_barrier();
     }
 
     Wall.blast_barrier = function(){

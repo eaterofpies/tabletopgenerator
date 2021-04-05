@@ -214,7 +214,7 @@ function main(params){
 
     // Make a wall section and get the size
     if (wall_type === 'Traffic Barrier'){
-        var wall = Wall.traffic_barrier(0).scale(1/45);
+        var wall = Wall.traffic_barrier().scale(1/45);
     } else {
         var wall = Wall.blast_barrier().scale(1/4.5);
     }
