@@ -32,6 +32,7 @@ function traffic_barrier(){
     // size of angled section
     ax = bounds[1].x - (1.5*c);
     ay = ax * Math.tan(end_angle_rad);
+
     pts = [
         // connector to the next barrier
         [-1.5 * c, bounds[1].y - c],
@@ -44,7 +45,7 @@ function traffic_barrier(){
         [-0.5 * c, bounds[0].y + c],
         [-0.5 * c, bounds[0].y],
         [-1.5 * c, bounds[0].y],
-        [bounds[0].x, bounds[0].y+ay],
+        [bounds[0].x, bounds[0].y + ay],
         [bounds[0].x, bounds[1].y - c - ay]
     ];
     footprint = linear_extrude({height: height}, polygon(pts));
