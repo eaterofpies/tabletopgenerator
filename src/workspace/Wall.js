@@ -1,27 +1,5 @@
-function traffic_barrier(){
-    // dimensions based on https://en.wikipedia.org/wiki/Jersey_barrier#/media/File:Jersey_barrier_2.png
-    pts = [
-        [-150, 1070],
-        [150, 1070],
-        [150 + 50, 255],
-        [410, 0],
-        [410, -75],
-        [-410, -75],
-        [-410, 0],
-        [-150 - 50, 255]
-    ];
-
-    length = 2500;
-
-    // length is approx 8ft
-    var barrier = linear_extrude({height: length}, polygon(pts)).rotateX(90);
-
-    // center it in x and y and zero it in z
-    barrier = center([true, true, false], barrier).translate([0,0,75]);
-
-    bounds = barrier.getBounds();
-    width = bounds[1].x - bounds[0].x;
-    height = bounds[1].z - bounds[0].z;
+function gen_footprint(target){
+    bounds = target.getBounds()
 
     // carve out the edges so that you can make corners out of them
     end_angle_rad = 45 * Math.PI/180;
@@ -48,8 +26,36 @@ function traffic_barrier(){
         [bounds[0].x, bounds[0].y + ay],
         [bounds[0].x, bounds[1].y - c - ay]
     ];
-    footprint = linear_extrude({height: height}, polygon(pts));
-    footprint = center([true, true, false], footprint);
+
+    return polygon(pts);
+}
+
+function traffic_barrier(){
+    // dimensions based on https://en.wikipedia.org/wiki/Jersey_barrier#/media/File:Jersey_barrier_2.png
+    pts = [
+        [-150, 1070],
+        [150, 1070],
+        [150 + 50, 255],
+        [410, 0],
+        [410, -75],
+        [-410, -75],
+        [-410, 0],
+        [-150 - 50, 255]
+    ];
+
+    length = 2500;
+
+    // length is approx 8ft
+    var barrier = linear_extrude({height: length}, polygon(pts)).rotateX(90);
+
+    // center it in x and y and zero it in z
+    barrier = center([true, true, false], barrier).translate([0,0,75]);
+
+    bounds = barrier.getBounds();
+    width = bounds[1].x - bounds[0].x;
+    height = bounds[1].z - bounds[0].z;
+
+    footprint = linear_extrude({height: height}, gen_footprint(barrier));
     barrier = barrier.intersect(footprint);
 
     // make a cutout for forklift prongs
