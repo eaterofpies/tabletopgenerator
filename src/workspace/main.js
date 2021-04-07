@@ -165,7 +165,7 @@ function rand_uint31(){
 }
 
 function getParameterDefinitions() {
-    return [
+    var params = [
         {
             name: 'wall_type',
             type: 'choice',
@@ -185,8 +185,21 @@ function getParameterDefinitions() {
         { name: 'bullet_seed', type: 'int', min: 0, max: uint31_max(), initial: 412449399, caption: "Bullet hole seed:" },
         { name: 'bullet_count', type: 'int', initial: 30, min: 0, max: 50, caption: "Bullet hole count:" },
         { name: 'bullet_hole_detail', type: 'int', initial: 5, min: 2, max: 8, caption: "Bullet hole detail level:" },
-      ];
-  }
+    ];
+
+    // Overwrite initial values from query params
+    const urlParams = new URLSearchParams(window.location.search);
+
+    for(var i = 0; i < params.length; ++i){
+        param_name = params[i].name;
+        var value = urlParams.get(param_name);
+        if (value != undefined){
+            params[i].initial = value;
+        }
+    }
+
+    return params;
+}
 
 function main(params){
     DiamondSquare();
