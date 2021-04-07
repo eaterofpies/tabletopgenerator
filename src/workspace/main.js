@@ -188,6 +188,41 @@ function getParameterDefinitions() {
       ];
   }
 
+function make_rebar(target, seed){
+    var rng = RngFactory.create(seed);
+
+    bounds = target.getBounds()
+    height = bounds[1].z - bounds[0].z;
+    width = bounds[1].y - bounds[0].y;
+
+    min_spacing = 5
+
+    count = Math.floor(width/min_spacing)-1;
+    sections = Math.floor(height/min_spacing)+1;
+
+    var bars = [];
+    for(var i = 0; i < count; ++i){
+        column_rng = RngFactory.create(rng.int31());
+
+        var bar_path = [];
+        for(var j = 0; j < sections; ++j){
+            x = column_rng.realrange(-1,1);
+            y = bounds[0].y + ((i+1) * min_spacing) + column_rng.realrange(-1,1);
+            z = bounds[0].z + (j * min_spacing) + column_rng.realrange(-1,1);
+            bar_path.push([x,y,z]);
+        }
+
+        var bar = [];
+        for (var j = 1; j < sections; ++j){
+            bar.push(cylinder({start: bar_path[j-1], end:bar_path[j], r : 0.5, fn:8, round:true, center: true}));
+        }
+        bars.push(union(bar));
+    }
+
+
+    return union(bars)
+}
+
 function main(params){
     DiamondSquare();
     HeightMap();
@@ -228,15 +263,18 @@ function main(params){
     size = Math.max(wall_size[0]+2, wall_size[1]+2);
     mapSize = [size, size, [bounds[1].z+2]];
 
+    rebar = make_rebar(wall, params.top_seed);
+
     // Make the surface damage
     wall = apply_bullet_holes(bullet_seed, wall, bullet_count, bullet_detail);
     if(top_damage) {
         surface = make_surface(top_seed, maxDelta, top_detail);
         var damageMap = HeightMap.to_polyhedron(surface,mapSize);
         damageMap = damageMap.center([true, true, false]);
-        wall = intersection(damageMap,wall);
+        wall = intersection(damageMap, wall);
+        rebar = intersection(damageMap, rebar);
     }
 
     wall = color([0.5,0.5,0.5],wall);
-    return [wall];
+    return union(wall, rebar);
 }
