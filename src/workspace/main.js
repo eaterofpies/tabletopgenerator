@@ -8,26 +8,8 @@ include("Util.js");
 "use strict";
 
 function make_surface(seed, maxDelta, iterations){
-
     var rng = RngFactory.create(seed);
-    var surface =
-    [
-        [
-            rng.realrange(0, maxDelta*2),
-            rng.realrange(0, maxDelta*2)
-        ],
-        [
-            rng.realrange(0, maxDelta*2),
-            rng.realrange(0, maxDelta*2)
-        ]
-    ]
-
-    for(var i = 0; i < iterations; i++){
-       maxDelta /= 2;
-       surface = DiamondSquare.run(rng, surface, maxDelta);
-    }
-
-    return surface;
+    return DiamondSquare.make_surface(rng, maxDelta, iterations);
 }
 
 function make_mpd(rng, maxDelta, iterations, wrap){
@@ -143,8 +125,9 @@ function apply_bullet_holes(seed, target, bullet_count, mpd_iterations){
 
     // Union fails with an array of 0;
     if (holes.length > 0){
-        // Doing this iteratively gives more accurate results but takes much longer
-        target = difference(target, union(holes));
+        for(i = 0; i < holes.length; i++){
+            target = difference(target, holes[i]);
+        }
     }
     return target;
 }
@@ -202,6 +185,8 @@ function getParameterDefinitions() {
 }
 
 function main(params){
+    const start = Date.now();
+
     DiamondSquare();
     HeightMap();
     MidPointDisplacement();
@@ -251,5 +236,7 @@ function main(params){
     }
 
     wall = color([0.5,0.5,0.5],wall);
+    const millis = Date.now() - start;
+    console.log("took " + millis + "ms");
     return [wall];
 }

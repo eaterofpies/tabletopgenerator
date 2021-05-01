@@ -241,7 +241,7 @@ MersenneTwister.prototype.realrange = function (min, max) {
     return min + (this.real() * (max-min));
 }
 
-RngFactory = function () {
+RngFactory = function(){
     RngFactory.create = function(seed) {
         return new MersenneTwister(seed);
     }

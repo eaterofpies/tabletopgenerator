@@ -4,66 +4,24 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
   <title>Tabletop Generator</title>
   <link rel="stylesheet" href="min.css" type="text/css">
+  <script type="text/javascript" src="dist/min.js"></script>
+  <script type="text/javascript" src="workspace/DiamondSquare.js"></script>
+  <script type="text/javascript" src="workspace/MersenneTwister.js"></script>
+  <script type="text/javascript" src="page.js"></script>
 </head>
 
 <body>
-  <script src="dist/min.js"></script>
-  <script>
-  function RandomSeeds(){
-    document.getElementsByName('top_seed')[0].value = Math.floor(Math.random() * 2147483647.0);
-    document.getElementsByName('bullet_seed')[0].value = Math.floor(Math.random() * 2147483647.0);
-    document.getElementById('updateButton').click();
-  }
 
-  function MakeUrl(){
-    const param_names = [
-      'wall_type',
-      'top_damage',
-      'top_seed',
-      'top_surf_detail',
-      'bullet_seed',
-      'bullet_count',
-      'bullet_hole_detail'
-    ]
-
-    // select boxes don't have IDs or names so set the names
-    param_table = document.getElementsByClassName('parameterstable')[0];
-    for (let row of param_table.rows)
-    {
-      cells = row.cells;
-      if (cells[0].innerText == 'Wall type:'){
-        cells[1].childNodes[0].name = 'wall_type';
-      } else if (cells[0].innerText == 'Surface damage:'){
-        cells[1].childNodes[0].name = 'top_damage';
-      }
-    }
-
-    var precursor = '?';
-    var url_params = "";
-    for(var i = 0; i < param_names.length; ++i){
-      var param = param_names[i]
-      // The controls don't have id's set so find them by name
-      var value = document.getElementsByName(param)[0].value
-      url_params += precursor + encodeURIComponent(param) + '=' + encodeURIComponent(value);
-      precursor = '&';
-    }
-
-    var url = location.protocol + '//' + location.host + location.pathname + url_params;
-    return url;
-  }
-
-  function GetUrl(){
-    var url = MakeUrl();
-    navigator.clipboard.writeText(url);
-  }
-
-</script>
   <h1>Wall Generator</h1>
   <p>Free to use for non commercial purposes. See the <a href='https://github.com/eaterofpies/tabletopgenerator'>full license and source code</a> for more details.</p>
   <p>Seed values are numbers in the range 0 to 2147483647 and control the damage patterns. The same seed will always generate the same damage pattern.</p>
   <p>Detail levels are valid in the range 0 to 8. The higher the detail level the longer the model will take to generate.</p>
   <p>Bullet hole count is unbounded. The more bullet holes the longer the model will take to generate.</p>
-  <button onclick="RandomSeeds();">Randomise</button><button onclick="GetUrl();">Copy Link</button>
+  <button onclick="RandomSeeds()">Randomise</button>
+  <button onclick="GetUrl()">Copy Link</button>
+  <button onclick="SearchLeft()">Find matching left</button>
+  <button onclick="SearchRight()">Find matching right</button>
+
 
 <!-- setup display of the errors as required by OpenJSCAD.js -->
   <div class="jscad-container">
