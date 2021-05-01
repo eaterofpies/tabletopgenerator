@@ -125,8 +125,9 @@ function apply_bullet_holes(seed, target, bullet_count, mpd_iterations){
 
     // Union fails with an array of 0;
     if (holes.length > 0){
-        // Doing this iteratively gives more accurate results but takes much longer
-        target = difference(target, union(holes));
+        for(i = 0; i < holes.length; i++){
+            target = difference(target, holes[i]);
+        }
     }
     return target;
 }
@@ -184,6 +185,8 @@ function getParameterDefinitions() {
 }
 
 function main(params){
+    const start = Date.now();
+
     DiamondSquare();
     HeightMap();
     MidPointDisplacement();
@@ -233,5 +236,7 @@ function main(params){
     }
 
     wall = color([0.5,0.5,0.5],wall);
+    const millis = Date.now() - start;
+    console.log("took " + millis + "ms");
     return [wall];
 }
