@@ -8,26 +8,8 @@ include("Util.js");
 "use strict";
 
 function make_surface(seed, maxDelta, iterations){
-
     var rng = RngFactory.create(seed);
-    var surface =
-    [
-        [
-            rng.realrange(0, maxDelta*2),
-            rng.realrange(0, maxDelta*2)
-        ],
-        [
-            rng.realrange(0, maxDelta*2),
-            rng.realrange(0, maxDelta*2)
-        ]
-    ]
-
-    for(var i = 0; i < iterations; i++){
-       maxDelta /= 2;
-       surface = DiamondSquare.run(rng, surface, maxDelta);
-    }
-
-    return surface;
+    return DiamondSquare.make_surface(rng, maxDelta, iterations);
 }
 
 function make_mpd(rng, maxDelta, iterations, wrap){

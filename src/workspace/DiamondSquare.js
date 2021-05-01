@@ -79,9 +79,29 @@ function run(rng, oldPts, maxDelta){
     return newPts;
 }
 
+function make_surface(rng, maxDelta, iterations){
+    var surface =
+    [
+        [
+            rng.realrange(0, maxDelta*2),
+            rng.realrange(0, maxDelta*2)
+        ],
+        [
+            rng.realrange(0, maxDelta*2),
+            rng.realrange(0, maxDelta*2)
+        ]
+    ]
+
+    for(var i = 0; i < iterations; i++){
+       maxDelta /= 2;
+       surface = run(rng, surface, maxDelta);
+    }
+
+    return surface;
+}
 
 DiamondSquare=function(){
-    DiamondSquare.run = function(rng, oldPts, maxDelta){
-        return run(rng, oldPts, maxDelta);
+    DiamondSquare.make_surface = function(rng, maxDelta, iterations){
+        return make_surface(rng, maxDelta, iterations);
     }
 }
