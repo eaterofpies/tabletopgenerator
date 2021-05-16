@@ -64,6 +64,33 @@ function closed_triangle_fan_pair(pts, height){
     return polyhedron({triangles:tris, points:pts_3d});
 }
 
+// Returns the intersection point if the lines intersect, otherwise 0. In addition, if the lines
+// intersect the intersection point may be stored in the floats i_x and i_y.
+function get_line_intersection(p0, p1, p2, p3){
+    const s1 = [p1[0] - p0[0], p1[1] - p0[1]];
+    const s2 = [p3[0] - p2[0], p3[1] - p2[1]];
+
+    const s = (-s1[1] * (p0[0] - p2[0]) + s1[0] * (p0[1] - p2[1])) / (-s2[0] * s1[1] + s1[0] * s2[1]);
+    const t = ( s2[0] * (p0[1] - p2[1]) - s2[1] * (p0[0] - p2[0])) / (-s2[0] * s1[1] + s1[0] * s2[1]);
+
+    if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+    {
+        return [p0[0] + (t * s1[0]), p0[1] + (t * s1[1])];
+    }
+
+    // No collision
+    return null;
+}
+
+function alloc_2d(size){
+    var out = new Array(size[0]);
+    for(var i = 0; i < out.length; i++){
+        out[i] = new Array(size[1]);
+    }
+    return out;
+}
+
+
 Util=function(){
     Util.linear_extrude_scale = function(pts, height, scale){
         return linear_extrude_scale(pts, height, scale);
@@ -71,5 +98,13 @@ Util=function(){
 
     Util.closed_triangle_fan_pair = function(pts, height){
         return closed_triangle_fan_pair(pts, height);
+    }
+
+    Util.get_line_intersection = function(p0, p1, p2, p3){
+        return get_line_intersection(p0, p1, p2, p3);
+    }
+
+    Util.alloc_2d = function(size){
+        return alloc_2d(size);
     }
 }

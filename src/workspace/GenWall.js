@@ -184,15 +184,8 @@ function getParameterDefinitions() {
     return params;
 }
 
-function main(params){
+function make_damaged_wall(params){
     const start = Date.now();
-
-    DiamondSquare();
-    HeightMap();
-    MidPointDisplacement();
-    RngFactory();
-    Wall();
-    Util();
 
     var wall_type = params.wall_type;
     var top_seed = params.top_seed;
@@ -237,6 +230,20 @@ function main(params){
 
     wall = color([0.5,0.5,0.5],wall);
     const millis = Date.now() - start;
-    console.log("took " + millis + "ms");
-    return [wall];
+    console.log("model took " + millis/1000 + " seconds");
+    return wall;
+}
+
+function main(params){
+
+    DiamondSquare();
+    HeightMap();
+    MidPointDisplacement();
+    RngFactory();
+    Wall();
+    Util();
+
+    wall = make_damaged_wall(params);
+
+    return wall;
 }
