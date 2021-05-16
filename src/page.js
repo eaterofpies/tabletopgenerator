@@ -40,7 +40,10 @@ const param_names = [
     'top_surf_detail',
     'bullet_seed',
     'bullet_count',
-    'bullet_hole_detail'
+    'bullet_hole_detail',
+    'bullet_hole_max_diameter',
+    'bullet_hole_min_depth',
+    'bullet_hole_max_depth'
 ];
 
 function GetParameters(){

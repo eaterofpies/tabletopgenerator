@@ -37,10 +37,10 @@ function make_mpd(rng, maxDelta, iterations, wrap){
     return pts;
 }
 
-function make_bullet_hole(seed, iterations, maxDelta, maxDiameter, maxDepth){
+function make_bullet_hole(seed, iterations, maxDelta, maxDiameter, minDepth, maxDepth){
     var rng = RngFactory.create(seed);
 
-    depth = maxDepth * rng.real();
+    depth = rng.realrange(minDepth, maxDepth);
 
     offsets = make_mpd(rng, maxDelta, iterations, true);
 
@@ -109,16 +109,14 @@ function position_bullet_hole(target, seed, hole){
 }
 
 
-function apply_bullet_holes(seed, target, bullet_count, mpd_iterations){
+function apply_bullet_holes(seed, target, bullet_count, mpd_iterations, max_diameter, min_depth, max_depth){
     var maxDelta = 0.5;
-    var maxDiameter = 10;
-    var maxDepth = 9;
     var rng = RngFactory.create(seed);
 
     var holes = [];
     for(var i = 0; i < bullet_count; i++){
         var hole_rng = RngFactory.create(rng.int31());
-        var hole = make_bullet_hole(hole_rng.int31(), mpd_iterations, maxDelta, maxDiameter, maxDepth);
+        var hole = make_bullet_hole(hole_rng.int31(), mpd_iterations, maxDelta, max_diameter, min_depth, max_depth);
         hole = position_bullet_hole(target, hole_rng.int31(), hole);
         holes.push(hole);
     }
@@ -168,6 +166,9 @@ function getParameterDefinitions() {
         { name: 'bullet_seed', type: 'int', min: 0, max: uint31_max(), initial: 412449399, caption: "Bullet hole seed:" },
         { name: 'bullet_count', type: 'int', initial: 30, min: 0, max: 50, caption: "Bullet hole count:" },
         { name: 'bullet_hole_detail', type: 'int', initial: 5, min: 2, max: 8, caption: "Bullet hole detail level:" },
+        { name: 'bullet_hole_max_diameter', type: 'int', initial: 10, min: 1, max: 40, caption: "Bullet hole max diameter:" },
+        { name: 'bullet_hole_min_depth', type: 'int', initial: 1, min: 1, max: 40, caption: "Bullet hole min depth:" },
+        { name: 'bullet_hole_max_depth', type: 'int', initial: 9, min: 1, max: 40, caption: "Bullet hole max depth:" },
     ];
 
     // Overwrite initial values from query params
@@ -201,7 +202,9 @@ function main(params){
     var bullet_seed = params.bullet_seed;
     var bullet_count = params.bullet_count;
     var bullet_detail = params.bullet_hole_detail;
-
+    var bullet_max_diameter = params.bullet_hole_max_diameter;
+    var bullet_min_depth = params.bullet_hole_min_depth;
+    var bullet_max_depth = params.bullet_hole_max_depth;
     var maxDelta = 0.5;
 
     top_detail = Math.min(top_detail, 8);
@@ -209,6 +212,15 @@ function main(params){
 
     bullet_detail = Math.min(bullet_detail, 8);
     bullet_detail = Math.max(bullet_detail, 2);
+
+    // limit the minimum bounds to prevent non manifold meshes
+    bullet_max_diameter = Math.max(bullet_max_diameter, 1)
+    bullet_max_depth = Math.max(bullet_max_depth, 1)
+
+    // clamp the min depth to range
+    bullet_min_depth = Math.max(bullet_min_depth, 1)
+    bullet_min_depth = Math.min(bullet_min_depth, bullet_max_depth-0.1);
+
 
     // Make a wall section and get the size
     if (wall_type === 'Traffic Barrier'){
@@ -227,7 +239,7 @@ function main(params){
     mapSize = [size, size, [bounds[1].z+2]];
 
     // Make the surface damage
-    wall = apply_bullet_holes(bullet_seed, wall, bullet_count, bullet_detail);
+    wall = apply_bullet_holes(bullet_seed, wall, bullet_count, bullet_detail, bullet_max_diameter, bullet_min_depth, bullet_max_depth);
     if(top_damage) {
         surface = make_surface(top_seed, maxDelta, top_detail);
         var damageMap = HeightMap.to_polyhedron(surface,mapSize);
